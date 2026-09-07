@@ -65,7 +65,8 @@
       "artifactName": "Steam-Achiever-${version}.${ext}"
     },
     "publish": {
-      "provider": "github"
+      "provider": "github",
+      "releaseType": "release"
     }
   }
 }
