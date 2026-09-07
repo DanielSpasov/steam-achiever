@@ -1,0 +1,71 @@
+{
+  "name": "steam-achiever",
+  "version": "1.0.0",
+  "description": "Desktop app to view and manually unlock or lock Steam achievements for games you own",
+  "author": "Daniel Spasov",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DanielSpasov/steam-achiever.git"
+  },
+  "main": "dist/main.js",
+  "scripts": {
+    "build:main": "tsc -p tsconfig.json",
+    "typecheck:renderer": "tsc -p renderer/tsconfig.json",
+    "bundle:renderer": "esbuild renderer/ui/main.ts --bundle --format=iife --target=es2020 --outfile=renderer/app.js",
+    "build": "npm run build:main && npm run typecheck:renderer && npm run bundle:renderer",
+    "watch": "tsc -p tsconfig.json --watch",
+    "start": "npm run build && electron .",
+    "dist": "npm run build && electron-builder",
+    "manual": "node scripts/manual-test.js"
+  },
+  "dependencies": {
+    "steamworks.js": "^0.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "electron": "^44.2.0",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.9.3"
+  },
+  "build": {
+    "appId": "com.danielspasov.steamachiever",
+    "productName": "Steam Achiever",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist",
+      "renderer/index.html",
+      "renderer/styles.css",
+      "renderer/app.js"
+    ],
+    "asarUnpack": [
+      "dist/worker.js",
+      "node_modules/steamworks.js/**"
+    ],
+    "mac": {
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.utilities",
+      "artifactName": "Steam-Achiever-${version}-${arch}.${ext}"
+    },
+    "win": {
+      "target": ["nsis"],
+      "artifactName": "Steam-Achiever-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Utility",
+      "artifactName": "Steam-Achiever-${version}.${ext}"
+    },
+    "publish": {
+      "provider": "github"
+    }
+  }
+}

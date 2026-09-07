@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src https: data:; connect-src 'none'"
+    />
+    <title>Steam Achiever</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Steam Achiever</div>
+      <div class="topbar-right">
+        <button id="editToggle" class="edit-toggle" type="button">Read-only</button>
+        <span id="statusPill" class="pill">
+          <span class="dot"></span><span id="statusText">Checking Steam</span>
+        </span>
+        <button id="rescanBtn" class="btn btn--ghost" type="button">Rescan</button>
+        <button id="settingsBtn" class="btn btn--ghost" type="button" title="Settings">Settings</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="filter-bar">
+            <input id="gameSearch" type="search" placeholder="Search games" autocomplete="off" />
+            <div class="filter">
+              <button id="filterBtn" type="button" class="btn btn--ghost">
+                Filter<span id="filterCount" class="filter-count" hidden></span>
+              </button>
+              <div id="filterMenu" class="filter-menu" hidden>
+                <label class="filter-opt filter-safe">
+                  <input id="safeOnly" type="checkbox" /> Safe games only
+                </label>
+                <p class="filter-hint">No VAC, no PvP, no online-only. Not a guarantee.</p>
+                <div class="filter-group">
+                  <div class="filter-title">Status</div>
+                  <label class="filter-opt"><input type="checkbox" data-status="installed" checked /> Installed</label>
+                  <label class="filter-opt"><input type="checkbox" data-status="uninstalled" checked /> Not installed</label>
+                </div>
+                <div class="filter-group" id="tagGroup">
+                  <div class="filter-title">Tags</div>
+                  <label class="filter-opt"><input type="checkbox" data-tag="vac" /> VAC</label>
+                  <label class="filter-opt"><input type="checkbox" data-tag="pvp" /> PvP</label>
+                  <label class="filter-opt"><input type="checkbox" data-tag="online" /> Online</label>
+                  <label class="filter-opt"><input type="checkbox" data-tag="has-pvp" /> Has PvP</label>
+                </div>
+                <button id="filterClear" type="button" class="filter-clear">Clear filters</button>
+              </div>
+            </div>
+          </div>
+          <div id="gameCount" class="muted tiny"></div>
+        </div>
+        <div id="gameList" class="game-list"></div>
+        <div id="gameListEmpty" class="muted pad" hidden>No games found.</div>
+        <div id="ownedNote" class="owned-note" hidden></div>
+      </aside>
+
+      <section class="detail">
+        <div id="detailEmpty" class="empty-state">
+          <h2>Pick a game</h2>
+          <p class="muted">
+            Choose a game on the left to see its achievements and, once you enable
+            editing, unlock or lock them.
+          </p>
+        </div>
+
+        <div id="detailView" hidden>
+          <div class="game-header">
+            <img id="gameHeaderImg" class="game-header-img" alt="" />
+            <div class="game-header-info">
+              <h2 id="gameTitle"></h2>
+              <div class="game-sub">
+                <span id="gameAppid" class="muted mono"></span>
+                <span id="gameSteamId" class="muted mono"></span>
+              </div>
+              <div class="progress">
+                <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+                <span id="progressLabel" class="muted"></span>
+              </div>
+            </div>
+          </div>
+
+          <div id="banner" class="banner" hidden></div>
+
+          <div class="toolbar">
+            <input id="achSearch" type="search" placeholder="Filter achievements" autocomplete="off" />
+            <div class="segmented" id="filterSeg">
+              <button type="button" data-filter="all" class="active">All</button>
+              <button type="button" data-filter="unlocked">Unlocked</button>
+              <button type="button" data-filter="locked">Locked</button>
+            </div>
+            <div class="spacer"></div>
+            <button id="unlockAllBtn" class="btn" type="button" disabled>Unlock all</button>
+            <button id="lockAllBtn" class="btn btn--ghost" type="button" disabled>Lock all</button>
+          </div>
+
+          <div id="achList" class="ach-list"></div>
+          <div id="achEmpty" class="muted pad" hidden></div>
+        </div>
+
+        <div id="detailLoading" class="detail-loading" hidden>
+          <div class="spinner"></div>
+          <span id="loadingLabel">Loading achievements</span>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="settingsDialog" class="dialog">
+      <form method="dialog">
+        <h3>Settings</h3>
+        <label class="field">
+          <span>Steam Web API key <span class="muted">(optional)</span></span>
+          <input id="apiKeyInput" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="0123456789ABCDEF0123456789ABCDEF" />
+        </label>
+        <p class="muted tiny">
+          Games you own but have not installed are found from Steam's local cache with
+          no key. A key (<a href="https://steamcommunity.com/dev/apikey">steamcommunity.com/dev/apikey</a>)
+          switches to authoritative ownership and playtime. Stored locally only.
+        </p>
+        <label class="toggle-row">
+          <input id="autoCloseInput" type="checkbox" />
+          <span>Close automatically when a VAC-secured game launches <span class="muted">(recommended)</span></span>
+        </label>
+        <div class="dialog-actions">
+          <button id="settingsCancel" class="btn btn--ghost" type="button">Cancel</button>
+          <button id="settingsSave" class="btn" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="riskDialog" class="dialog dialog--risk">
+      <h3>Read this before you use Steam Achiever</h3>
+      <div class="risk-body">
+        <p>
+          This tool changes achievement data on your real Steam account through the
+          official Steamworks API. Unlocking achievements you did not earn is against
+          Steam's Subscriber Agreement and many games' rules. By continuing you accept that:
+        </p>
+        <ul>
+          <li><b>Some game developers ban accounts</b> for achievement or stat
+            manipulation. This is separate from VAC and is per game. Rust is a known example.</li>
+          <li><b>Achievements can be wiped</b> by games that validate them server-side.</li>
+          <li><b>VAC-secured games are blocked</b> here, and the app closes itself if
+            you launch one, but no automated safety net is perfect.</li>
+          <li>Your "now playing" status briefly changes to each game you open here.</li>
+          <li>You are doing this to <b>your own account, at your own risk</b>. The
+            authors are not responsible for bans, lost progress, or other consequences.</li>
+        </ul>
+        <p class="muted tiny">
+          Safest use: single-player and non-competitive games only. Do not run this
+          while playing anything with anti-cheat.
+        </p>
+      </div>
+      <div class="dialog-actions">
+        <button id="riskQuit" class="btn btn--ghost" type="button">Quit</button>
+        <button id="riskAccept" class="btn btn--danger" type="button">I understand and accept the risks</button>
+      </div>
+    </dialog>
+
+    <div id="toasts" class="toasts"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

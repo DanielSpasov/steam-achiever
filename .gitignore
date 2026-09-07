@@ -141,3 +141,13 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# VSCode config
+.vscode
+
+# Compiled / bundled renderer output
+renderer/**/*.js
+renderer/**/*.js.map
+
+# electron-builder output
+release/
