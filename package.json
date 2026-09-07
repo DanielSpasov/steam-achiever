@@ -1,6 +1,6 @@
 {
   "name": "steam-achiever",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Desktop app to view and manually unlock or lock Steam achievements for games you own",
   "author": "Daniel Spasov",
   "license": "ISC",
@@ -47,12 +47,17 @@
       "node_modules/steamworks.js/**"
     ],
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.utilities",
       "artifactName": "Steam-Achiever-${version}-${arch}.${ext}"
     },
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "artifactName": "Steam-Achiever-Setup-${version}.${ext}"
     },
     "nsis": {
@@ -61,7 +66,9 @@
       "allowToChangeInstallationDirectory": true
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Utility",
       "artifactName": "Steam-Achiever-${version}.${ext}"
     },
