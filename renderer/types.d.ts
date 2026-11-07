@@ -71,6 +71,13 @@ interface SetAllResult {
   results?: Record<string, boolean | null>;
 }
 
+type UpdateStatus =
+  | { state: "none" }
+  | { state: "available"; version: string }
+  | { state: "downloading"; version: string; percent: number }
+  | { state: "ready"; version: string }
+  | { state: "failed"; version: string };
+
 interface SteamApi {
   init(): Promise<{
     version: string;
@@ -94,6 +101,9 @@ interface SteamApi {
   getSettings(): Promise<Settings>;
   setSettings(patch: Partial<Settings>): Promise<Settings>;
   onStatus(cb: (status: { running: boolean }) => void): () => void;
+  getUpdate(): Promise<UpdateStatus>;
+  runUpdateAction(): Promise<void>;
+  onUpdate(cb: (status: UpdateStatus) => void): () => void;
 }
 
 interface Window {

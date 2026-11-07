@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import type { Settings } from "./types";
+import type { Settings, UpdateStatus } from "./types";
 
 const api = {
   init: () => ipcRenderer.invoke("app:init"),
@@ -17,6 +17,13 @@ const api = {
     const handler = (_e: unknown, status: { running: boolean }) => cb(status);
     ipcRenderer.on("steam:status", handler);
     return () => ipcRenderer.removeListener("steam:status", handler);
+  },
+  getUpdate: () => ipcRenderer.invoke("update:get"),
+  runUpdateAction: () => ipcRenderer.invoke("update:act"),
+  onUpdate: (cb: (status: UpdateStatus) => void) => {
+    const handler = (_e: unknown, status: UpdateStatus) => cb(status);
+    ipcRenderer.on("update:status", handler);
+    return () => ipcRenderer.removeListener("update:status", handler);
   },
 };
 

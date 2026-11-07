@@ -3,6 +3,7 @@ import { state } from "./state";
 import { renderSidebar, wireSidebar, onGamePicked } from "./sidebar";
 import { openGame, wireDetail } from "./detail";
 import { wireDialogs, showRiskGate } from "./dialogs";
+import { wireUpdates } from "./update";
 
 function renderStatus(): void {
   const pill = $("#statusPill");
@@ -87,6 +88,7 @@ function wire(): void {
 
 async function boot(): Promise<void> {
   wire();
+  void wireUpdates();
   const info = await window.steam.init();
   state.steamRunning = info.running;
   state.editing = info.editingEnabled;

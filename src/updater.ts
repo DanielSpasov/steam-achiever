@@ -1,14 +1,27 @@
-import { app, dialog, shell } from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { autoUpdater } from "electron-updater";
+import type { UpdateStatus } from "./types";
 
 const RELEASES_URL = "https://github.com/DanielSpasov/steam-achiever/releases/latest";
 const LATEST_RELEASE_API =
   "https://api.github.com/repos/DanielSpasov/steam-achiever/releases/latest";
 
-// electron-updater's silent update/apply step requires a real (paid) Developer
-// ID signature on macOS; our builds are only ad-hoc signed (see adhoc-sign.js),
-// so on macOS we just check GitHub's latest release and point the user at it.
+let status: UpdateStatus = { state: "none" };
+
+function setStatus(next: UpdateStatus): void {
+  status = next;
+  for (const win of BrowserWindow.getAllWindows()) {
+    win.webContents.send("update:status", status);
+  }
+}
+
+// electron-updater's install step requires a real (paid) Developer ID signature
+// on macOS; our builds are only ad-hoc signed (see adhoc-sign.js), so on macOS
+// we only check GitHub's latest release and send the user to the download page.
 export function initUpdater(): void {
+  ipcMain.handle("update:get", () => status);
+  ipcMain.handle("update:act", () => runUpdateAction());
+
   if (!app.isPackaged) return;
 
   if (process.platform === "darwin") {
@@ -16,26 +29,46 @@ export function initUpdater(): void {
     return;
   }
 
-  autoUpdater.autoDownload = true;
+  autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = true;
 
-  autoUpdater.on("update-downloaded", (info) => {
-    const choice = dialog.showMessageBoxSync({
-      type: "info",
-      title: "Update ready",
-      message: `Steam Achiever ${info.version} has been downloaded.`,
-      detail:
-        "Restart now to install it, or it will install automatically the next time you quit.",
-      buttons: ["Restart now", "Later"],
-      defaultId: 0,
-    });
-    // Without these flags the assisted NSIS installer shows its window and Finish page.
-    if (choice === 0) autoUpdater.quitAndInstall(true, true);
+  autoUpdater.on("update-available", (info) => {
+    setStatus({ state: "available", version: info.version });
   });
-
+  autoUpdater.on("download-progress", (progress) => {
+    if (status.state !== "downloading") return;
+    setStatus({ ...status, percent: Math.round(progress.percent) });
+  });
+  autoUpdater.on("update-downloaded", (info) => {
+    setStatus({ state: "ready", version: info.version });
+  });
   autoUpdater.on("error", (err) => console.error("updater:", err));
 
-  void autoUpdater.checkForUpdates();
+  autoUpdater.checkForUpdates().catch((err) => console.error("update check:", err));
+}
+
+async function runUpdateAction(): Promise<void> {
+  if (process.platform === "darwin") {
+    await shell.openExternal(RELEASES_URL);
+    return;
+  }
+
+  if (status.state === "ready") {
+    // Without these flags the assisted NSIS installer shows its window and Finish page.
+    autoUpdater.quitAndInstall(true, true);
+    return;
+  }
+
+  if (status.state !== "available" && status.state !== "failed") return;
+
+  const { version } = status;
+  setStatus({ state: "downloading", version, percent: 0 });
+  try {
+    await autoUpdater.downloadUpdate();
+  } catch (err) {
+    console.error("update download:", err);
+    setStatus({ state: "failed", version });
+  }
 }
 
 async function checkForUpdateOnMac(): Promise<void> {
@@ -47,16 +80,7 @@ async function checkForUpdateOnMac(): Promise<void> {
     const latest = tag_name?.replace(/^v/, "");
     if (!latest || latest === app.getVersion()) return;
 
-    const choice = dialog.showMessageBoxSync({
-      type: "info",
-      title: "Update available",
-      message: `Steam Achiever ${latest} is available (you have ${app.getVersion()}).`,
-      detail:
-        "In-app updates aren't available on macOS yet. Open the GitHub releases page to download it?",
-      buttons: ["Open download page", "Later"],
-      defaultId: 0,
-    });
-    if (choice === 0) await shell.openExternal(RELEASES_URL);
+    setStatus({ state: "available", version: latest });
   } catch (err) {
     console.error("mac update check:", err);
   }

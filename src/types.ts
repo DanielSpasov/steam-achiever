@@ -102,3 +102,10 @@ export type WorkerIn =
 export type WorkerRequest =
   | { type: "states"; names: string[] }
   | { type: "set"; name: string; unlocked: boolean; armed: boolean };
+
+export type UpdateStatus =
+  | { state: "none" }
+  | { state: "available"; version: string }
+  | { state: "downloading"; version: string; percent: number }
+  | { state: "ready"; version: string }
+  | { state: "failed"; version: string };

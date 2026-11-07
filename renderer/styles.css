@@ -81,6 +81,27 @@ a {
   gap: 10px;
 }
 
+.update-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.update-action {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+.update-action:hover {
+  text-decoration: underline;
+}
+
 .edit-toggle {
   border: 1px solid var(--border);
   background: var(--bg-2);
