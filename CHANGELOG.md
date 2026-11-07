@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/DanielSpasov/steam-achiever/compare/v1.1.3...v1.2.0) (2026-11-07)
+
+
+### Features
+
+* **release:** add app icon ([52aacd8](https://github.com/DanielSpasov/steam-achiever/commit/52aacd8b958c40391ea9126a34e84920c8c976a8))
+
 ## [1.1.3](https://github.com/DanielSpasov/steam-achiever/compare/v1.1.2...v1.1.3) (2026-11-07)
 
 
