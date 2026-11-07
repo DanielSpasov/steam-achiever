@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/DanielSpasov/steam-achiever/compare/v1.1.0...v1.1.1) (2026-11-07)
+
+
+### Bug Fixes
+
+* **release:** fetch full git history in release job ([6906b76](https://github.com/DanielSpasov/steam-achiever/commit/6906b760c131d39bd966d18a0851ddeafb4316bf))
+
 # [1.1.0](https://github.com/DanielSpasov/steam-achiever/compare/v1.0.1...v1.1.0) (2026-11-07)
 
 
