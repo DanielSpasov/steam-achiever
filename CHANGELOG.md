@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/DanielSpasov/steam-achiever/compare/v1.1.2...v1.1.3) (2026-11-07)
+
+
+### Bug Fixes
+
+* **release:** ask before downloading updates ([853a566](https://github.com/DanielSpasov/steam-achiever/commit/853a5663bf609bae310f3c937cb431885bb2cbe3))
+
 ## [1.1.2](https://github.com/DanielSpasov/steam-achiever/compare/v1.1.1...v1.1.2) (2026-11-07)
 
 
