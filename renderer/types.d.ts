@@ -73,6 +73,7 @@ interface SetAllResult {
 
 interface SteamApi {
   init(): Promise<{
+    version: string;
     hasSteamRoot: boolean;
     running: boolean;
     editingEnabled: boolean;

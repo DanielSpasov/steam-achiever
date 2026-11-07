@@ -90,6 +90,7 @@ async function boot(): Promise<void> {
   const info = await window.steam.init();
   state.steamRunning = info.running;
   state.editing = info.editingEnabled;
+  $("#appVersion").textContent = `Version ${info.version}`;
   renderStatus();
   renderEditButton();
 

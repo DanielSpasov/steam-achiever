@@ -1,4 +1,4 @@
-import { ipcMain } from "electron";
+import { app, ipcMain } from "electron";
 import { context, gameById, isVacGame, isFullyOnlineGame, onlineTier } from "./context";
 import { listGames, imageUrls } from "./steam/library";
 import { readSchema } from "./steam/schema";
@@ -22,6 +22,7 @@ export function registerIpc(): void {
   ipcMain.handle("app:init", async () => {
     const settings = readSettings();
     return {
+      version: app.getVersion(),
       hasSteamRoot: !!context.steamRoot,
       running: await isSteamRunning(),
       editingEnabled: context.editingEnabled,

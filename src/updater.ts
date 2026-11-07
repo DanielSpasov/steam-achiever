@@ -29,7 +29,8 @@ export function initUpdater(): void {
       buttons: ["Restart now", "Later"],
       defaultId: 0,
     });
-    if (choice === 0) autoUpdater.quitAndInstall();
+    // Without these flags the assisted NSIS installer shows its window and Finish page.
+    if (choice === 0) autoUpdater.quitAndInstall(true, true);
   });
 
   autoUpdater.on("error", (err) => console.error("updater:", err));

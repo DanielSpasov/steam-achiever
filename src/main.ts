@@ -27,6 +27,8 @@ function createWindow(): void {
     },
   });
 
+  if (process.platform !== "darwin") win.removeMenu();
+
   win.loadFile(path.join(__dirname, "..", "renderer", "index.html"));
 
   win.webContents.on("console-message", (...args: unknown[]) => {
