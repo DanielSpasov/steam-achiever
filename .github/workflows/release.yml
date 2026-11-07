@@ -1,21 +1,49 @@
-name: Build installers
+name: Release
 
-# Runs when you push a version tag, e.g.
-#   git tag v1.0.1 && git push origin v1.0.1
-# It builds the Windows, macOS and Linux installers and attaches them to a
-# GitHub Release for that tag. You can also start it by hand from the Actions tab.
+# Runs on every push to master. semantic-release looks at the commits since the
+# last release (feat: -> minor, fix: -> patch, BREAKING CHANGE -> major) and, if
+# there's anything releasable, bumps the version, writes CHANGELOG.md, tags it,
+# and creates a GitHub Release. If that happened, the build job then checks out
+# that tag and builds + publishes the Windows/macOS/Linux installers to it,
+# which electron-updater picks up for in-app updates.
+#
+# Can also be run by hand from the Actions tab.
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [master]
   workflow_dispatch:
 
 permissions:
   contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.semantic.outputs.new_release_published }}
+      tag: ${{ steps.semantic.outputs.new_release_git_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Semantic Release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build:
+    needs: release
+    if: needs.release.outputs.published == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -24,6 +52,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag }}
 
       - uses: actions/setup-node@v4
         with:

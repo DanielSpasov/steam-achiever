@@ -6,6 +6,7 @@ import { isSteamRunning } from "./steam/detect";
 import { registerIpc, primeGameCache } from "./ipc";
 import { checkForVacGame } from "./vac-guard";
 import { stopWorker } from "./worker-pool";
+import { initUpdater } from "./updater";
 
 let win: BrowserWindow | null = null;
 let statusTimer: NodeJS.Timeout | null = null;
@@ -58,6 +59,7 @@ app.whenReady().then(() => {
   registerIpc();
   primeGameCache();
   createWindow();
+  initUpdater();
 
   void pushStatus();
   statusTimer = setInterval(() => void pushStatus(), 4000);

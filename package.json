@@ -4,6 +4,7 @@
   "description": "Desktop app to view and manually unlock or lock Steam achievements for games you own",
   "author": "Daniel Spasov",
   "license": "ISC",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/DanielSpasov/steam-achiever.git"
@@ -17,16 +18,23 @@
     "watch": "tsc -p tsconfig.json --watch",
     "start": "npm run build && electron .",
     "dist": "npm run build && electron-builder",
-    "manual": "node scripts/manual-test.js"
+    "manual": "node scripts/manual-test.js",
+    "release:dry": "semantic-release --dry-run --no-ci"
   },
   "dependencies": {
+    "electron-updater": "^6.6.2",
     "steamworks.js": "^0.4.0"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.5",
+    "@semantic-release/npm": "^12.0.2",
     "@types/node": "^26.4.1",
     "electron": "^44.2.0",
     "electron-builder": "^26.15.3",
     "esbuild": "^0.28.2",
+    "semantic-release": "^24.2.9",
     "typescript": "^5.9.3"
   },
   "build": {
