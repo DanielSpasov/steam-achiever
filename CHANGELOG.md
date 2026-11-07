@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/DanielSpasov/steam-achiever/compare/v1.1.1...v1.1.2) (2026-11-07)
+
+
+### Bug Fixes
+
+* **release:** silent updates, show version in settings, hide menu bar ([194c2af](https://github.com/DanielSpasov/steam-achiever/commit/194c2af2448786d053d5b3e8770897ec99170523))
+
 ## [1.1.1](https://github.com/DanielSpasov/steam-achiever/compare/v1.1.0...v1.1.1) (2026-11-07)
 
 
